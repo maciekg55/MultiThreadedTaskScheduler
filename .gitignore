@@ -1,0 +1,24 @@
+# CLion / IntelliJ
+.idea/
+
+# CMake
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# macOS
+.DS_Store
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio Code
+.vscode/
+
+# Logs
+*.log
