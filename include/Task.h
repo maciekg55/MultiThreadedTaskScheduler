@@ -7,7 +7,6 @@ class Task {
 public:
     enum class TaskStatus {
         Planned,
-        Waiting,
         Running,
         Completed,
         Cancelled,
@@ -18,7 +17,7 @@ protected:
     std::string _name;
     int _priority;
     std::atomic<int> _progress;
-    TaskStatus _status;
+    std::atomic<TaskStatus> _status = TaskStatus::Planned;
     std::vector<int> _dependencies; // as id of other tasks
     int _estTime = 5;
     std::chrono::steady_clock::time_point _startTime;
@@ -45,8 +44,6 @@ public:
     int getProgress() const { return _progress; }
 
     int getPriority() const { return _priority; }
-
-    void setEstimatedTime(int t) { _estTime = t; }
 
     void setPriority(int p)      { _priority = p; }
 

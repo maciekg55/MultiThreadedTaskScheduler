@@ -2,8 +2,10 @@
 #include <thread>
 #include <chrono>
 
-ComputationTask::ComputationTask(const int id, std::string name, std::vector<int> deps)
-    : Task(id, std::move(name),2, std::move(deps)) {}
+ComputationTask::ComputationTask(int id, std::string name, std::vector<int> dependencies)
+    : Task(id, std::move(name), 2, std::move(dependencies)) {
+    _estTime = 10;  // 100 iterations * 100ms
+}
 
 void ComputationTask::execute() {
     for (int i = 0; i <= 100; i++) {

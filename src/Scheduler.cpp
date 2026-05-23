@@ -14,7 +14,7 @@ void Scheduler::addTask(std::shared_ptr<Task> task) {
 }
 
 void Scheduler::start() {
-    if (_running) return;  // already running, ignore
+    if (_running) return;
     _running = true;
     _paused  = false;
     _schedulerThread = std::thread(&Scheduler::schedulerLoop, this);
@@ -29,9 +29,7 @@ void Scheduler::resume() {
 }
 
 void Scheduler::stop() {
-    if (!_running) return;
 
-    // cancel all tasks so execute() returns quickly
     {
         std::lock_guard<std::mutex> lock(_mutex);
         for (auto& [id, task] : _tasks)
@@ -43,6 +41,8 @@ void Scheduler::stop() {
 
     if (_schedulerThread.joinable())
         _schedulerThread.join();
+
+    _threadPool.waitForAll();
 }
 
 bool Scheduler::isReady(const std::shared_ptr<Task>& task) const {

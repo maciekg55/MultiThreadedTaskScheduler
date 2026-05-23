@@ -9,15 +9,15 @@ private:
 
     bool _started = false;
     bool _paused  = false;
+    bool _allDone = false;
 public:
-    Engine();
+    Engine(bool runTest);
     void run();
 
 private:
     void handleEvents();
     void update();
     void render();
-    void resetTasks();
     void validateDeps(std::shared_ptr<Task>& task);
-
+    void test();
 };

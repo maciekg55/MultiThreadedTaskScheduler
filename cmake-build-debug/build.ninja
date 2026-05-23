@@ -119,6 +119,62 @@ build CMakeFiles/MultithreadedTaskScheduler.dir/src/RenderTask.cpp.o: CXX_COMPIL
   OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
   OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src
 
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/views/ThreadView.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/views/ThreadView.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/views/ThreadView.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src/views
+
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/views/GanttGraphView.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/views/GanttGraphView.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/views/GanttGraphView.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src/views
+
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/views/DependenciesGraphView.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/views/DependenciesGraphView.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/views/DependenciesGraphView.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src/views
+
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/views/TaskQueueView.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/views/TaskQueueView.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/views/TaskQueueView.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src/views
+
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/views/TaskDetailsView.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/views/TaskDetailsView.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/views/TaskDetailsView.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src/views
+
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/views/StatsBar.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/views/StatsBar.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/views/StatsBar.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src/views
+
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/UIHelpers.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/UIHelpers.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/UIHelpers.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src
+
+build CMakeFiles/MultithreadedTaskScheduler.dir/src/views/AddTaskFormView.cpp.o: CXX_COMPILER__MultithreadedTaskScheduler_unscanned_Debug /Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/src/views/AddTaskFormView.cpp || cmake_object_order_depends_target_MultithreadedTaskScheduler
+  DEP_FILE = CMakeFiles/MultithreadedTaskScheduler.dir/src/views/AddTaskFormView.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciekgajdzinski/Documents/Projects/MultithreadedTaskScheduler/include -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir
+  OBJECT_FILE_DIR = CMakeFiles/MultithreadedTaskScheduler.dir/src/views
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target MultithreadedTaskScheduler
@@ -127,7 +183,7 @@ build CMakeFiles/MultithreadedTaskScheduler.dir/src/RenderTask.cpp.o: CXX_COMPIL
 #############################################
 # Link the executable MultithreadedTaskScheduler
 
-build MultithreadedTaskScheduler: CXX_EXECUTABLE_LINKER__MultithreadedTaskScheduler_Debug CMakeFiles/MultithreadedTaskScheduler.dir/src/main.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Task.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/ComputationTask.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Scheduler.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/ThreadPool.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Engine.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Renderer.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/IOTask.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/FileCheckTask.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/RenderTask.cpp.o | /opt/homebrew/lib/libsfml-graphics.3.0.2.dylib /opt/homebrew/lib/libsfml-window.3.0.2.dylib /opt/homebrew/lib/libsfml-system.3.0.2.dylib
+build MultithreadedTaskScheduler: CXX_EXECUTABLE_LINKER__MultithreadedTaskScheduler_Debug CMakeFiles/MultithreadedTaskScheduler.dir/src/main.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Task.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/ComputationTask.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Scheduler.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/ThreadPool.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Engine.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/Renderer.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/IOTask.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/FileCheckTask.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/RenderTask.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/views/ThreadView.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/views/GanttGraphView.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/views/DependenciesGraphView.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/views/TaskQueueView.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/views/TaskDetailsView.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/views/StatsBar.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/UIHelpers.cpp.o CMakeFiles/MultithreadedTaskScheduler.dir/src/views/AddTaskFormView.cpp.o | /opt/homebrew/lib/libsfml-graphics.3.0.2.dylib /opt/homebrew/lib/libsfml-window.3.0.2.dylib /opt/homebrew/lib/libsfml-system.3.0.2.dylib
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -mmacosx-version-min=26.3
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  /opt/homebrew/lib/libsfml-graphics.3.0.2.dylib  /opt/homebrew/lib/libsfml-window.3.0.2.dylib  /opt/homebrew/lib/libsfml-system.3.0.2.dylib
   OBJECT_DIR = CMakeFiles/MultithreadedTaskScheduler.dir

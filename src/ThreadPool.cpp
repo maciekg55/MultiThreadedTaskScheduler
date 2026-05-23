@@ -43,22 +43,19 @@ bool ThreadPool::hasFreeThread() const {
 void ThreadPool::workerLoop(int workerId) {
     while (true) {
         std::shared_ptr<Task> task;
-
         {
             std::unique_lock lock(_mutex);
-            // sleep until there's a task OR we're shutting down
             _cv.wait(lock, [this] {
                 return !_taskQueue.empty() || !_running;
             });
-
-            if (!_running && _taskQueue.empty()) return;  // clean exit
-
+            if (!_running && _taskQueue.empty()) return;
             task = _taskQueue.front();
             _taskQueue.pop();
             _workers[workerId].currentTask = task;
             _workers[workerId].status = Task::TaskStatus::Running;
         }
-        task->setAssignedThread(workerId);  // ← must be first
+
+        task->setAssignedThread(workerId);
         task->markStarted();
         task->execute();
         task->markEnded();
@@ -67,7 +64,31 @@ void ThreadPool::workerLoop(int workerId) {
         {
             std::lock_guard lock(_mutex);
             _workers[workerId].currentTask = nullptr;
-            _workers[workerId].status = Task::TaskStatus::Planned;  // back to idle
+            _workers[workerId].status = Task::TaskStatus::Planned;
         }
+        // release shared_ptr AFTER nulling currentTask
+        task.reset();
+    }
+}
+
+void ThreadPool::restart() {
+    {
+        std::lock_guard lock(_mutex);
+        _running = false;
+    }
+    _cv.notify_all();
+    for (auto& worker : _workers) {
+        if (worker.thread.joinable())
+            worker.thread.join();
+    }
+
+    // clear state
+    while (!_taskQueue.empty()) _taskQueue.pop();
+    for (auto& w : _workers) w.currentTask = nullptr;
+
+    // restart
+    _running = true;
+    for (unsigned int i = 0; i < _threadCount; i++) {
+        _workers[i].thread = std::thread(&ThreadPool::workerLoop, this, i);
     }
 }

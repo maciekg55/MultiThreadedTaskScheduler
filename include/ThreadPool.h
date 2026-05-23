@@ -36,6 +36,26 @@ public:
     bool hasFreeThread() const;
 
     const std::vector<WorkerThread>& getWorkers() const { return _workers; }
+    void restart();
 
+    void waitForAll() {
+        // drain queue first
+        {
+            std::lock_guard lock(_mutex);
+            while (!_taskQueue.empty()) _taskQueue.pop();
+        }
+
+        // then wait for running workers
+        while (true) {
+            {
+                std::lock_guard lock(_mutex);
+                bool anyRunning = false;
+                for (const auto& w : _workers)
+                    if (w.currentTask != nullptr) { anyRunning = true; break; }
+                if (!anyRunning) return;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+    }
 
 };

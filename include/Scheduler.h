@@ -38,8 +38,9 @@ public:
 
     void pause();
     void resume();
-    void clearTasks() {
-        std::lock_guard<std::mutex> lock(_mutex);
+
+    void reset() {
+        std::lock_guard lock(_mutex);
         _tasks.clear();
         _queue.clear();
     }

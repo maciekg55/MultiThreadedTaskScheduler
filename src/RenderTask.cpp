@@ -1,5 +1,11 @@
 #include "../include/RenderTask.h"
 #include <thread>
+
+RenderTask::RenderTask(int id, std::string name, std::vector<int> dependencies)
+    : Task(id, std::move(name), 2, std::move(dependencies)) {
+    _estTime = 12;  // 100 iterations * 120ms
+}
+
 void RenderTask::execute() {
     for (int i = 0; i <= 100; i++) {
         if (_cancelled) return;

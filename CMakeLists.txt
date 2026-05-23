@@ -25,7 +25,24 @@ add_executable(${PROJECT_NAME}
         src/FileCheckTask.cpp
         include/FileCheckTask.h
         src/RenderTask.cpp
-        include/RenderTask.h)
+        include/RenderTask.h
+        include/views/ThreadView.h
+        include/views/GanttGraphView.h
+        include/views/DependenciesGraphView.h
+        include/views/TaskDetailsView.h
+        include/views/TaskQueueView.h
+        include/views/StatsBar.h
+        src/views/ThreadView.cpp
+        src/views/GanttGraphView.cpp
+        src/views/DependenciesGraphView.cpp
+        src/views/TaskQueueView.cpp
+        src/views/TaskDetailsView.cpp
+        src/views/StatsBar.cpp
+        src/UIHelpers.cpp
+        include/UIHelpers.h
+        src/views/AddTaskFormView.cpp
+        include/views/AddTaskFormView.h
+)
 
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
