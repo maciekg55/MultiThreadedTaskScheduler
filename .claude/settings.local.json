@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(pkg-config --modversion sfml-all)",
-      "Read(//opt/homebrew/Cellar/sfml/3.0.2/include/SFML/**)",
-      "Read(//usr/local/include/**)"
-    ]
-  }
-}
