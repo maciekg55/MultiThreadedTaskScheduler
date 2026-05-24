@@ -16,7 +16,7 @@ void Scheduler::addTask(const std::shared_ptr<Task> &task) {
 void Scheduler::start() {
     if (_running) return;
     _running = true;
-    _paused  = false;
+    _paused = false;
     _schedulerThread = std::thread(&Scheduler::schedulerLoop, this);
 }
 
@@ -91,7 +91,6 @@ void Scheduler::schedulerLoop() {
                     }
                 }
 
-                // dispatch ready tasks to free threads
                 while (_threadPool.hasFreeThread()) {
                     auto task = pickNext();
                     if (!task) break;
@@ -100,11 +99,9 @@ void Scheduler::schedulerLoop() {
                 }
             }
 
-            // submit outside the lock
             for (auto& task : toSubmit)
                 _threadPool.submit(task);
 
-            // check if all tasks are done
             bool allDone = true;
             {
                 std::lock_guard lock(_mutex);

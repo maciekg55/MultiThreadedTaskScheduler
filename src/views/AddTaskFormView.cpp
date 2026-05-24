@@ -61,14 +61,11 @@ void AddTaskFormView::handleClick(sf::Vector2f mouse) {
     float labelH = H * 0.015f * 1.4f;
     float curY = formY + formH * 0.14f;
 
-    // text input focus
     _nameInput.focused = _nameInput.bounds.contains(mouse);
     _depsInput.focused = _depsInput.bounds.contains(mouse);
 
-    // skip to priority Y — 3 inputs down
     float prioY = curY + gap * 2 + labelH;
 
-    // priority buttons
     float prioBtnW = fieldW / 3.f - 4.f;
     for (int i = 0; i < 3; i++) {
         sf::FloatRect r({fieldX + i * (prioBtnW + 4.f), prioY}, {prioBtnW, fieldH});
@@ -76,7 +73,6 @@ void AddTaskFormView::handleClick(sf::Vector2f mouse) {
 
     }
 
-    // type buttons
     float typeY = prioY + gap + labelH;
     float typeBtnW = fieldW / 4.f - 4.f;
     for (int i = 0; i < 4; i++) {
@@ -172,13 +168,11 @@ void AddTaskFormView::draw() {
     float gap = H * 0.085f;
     float curY = formY + formH * 0.14f;
 
-    // overlay
     sf::RectangleShape overlay({W, H});
     overlay.setFillColor(sf::Color(0, 0, 0, 160));
     overlay.setPosition({0, 0});
     _window.draw(overlay);
 
-    // form box
     sf::RectangleShape formBg({formW, formH});
     formBg.setFillColor(sf::Color(28, 28, 45));
     formBg.setOutlineThickness(1);
@@ -197,13 +191,11 @@ void AddTaskFormView::draw() {
     titleDiv.setPosition({formX + 1, formY + formH * 0.11f});
     _window.draw(titleDiv);
 
-    // inputs
     drawInput("Task Name", _nameInput, fieldX, fieldW, fieldH, labelSize, curY);
     curY += gap;
     drawInput("Dependencies (comma separated IDs, e.g. 1,3)", _depsInput, fieldX, fieldW, fieldH, labelSize, curY);
     curY += gap;
 
-    // priority
     sf::Text prioLabel(_font, "Priority");
     prioLabel.setCharacterSize(labelSize);
     prioLabel.setFillColor(sf::Color(140, 140, 160));
@@ -230,7 +222,6 @@ void AddTaskFormView::draw() {
     }
     curY += gap;
 
-    // type
     sf::Text typeLabel(_font, "Task Type");
     typeLabel.setCharacterSize(labelSize);
     typeLabel.setFillColor(sf::Color(140, 140, 160));
@@ -258,7 +249,6 @@ void AddTaskFormView::draw() {
     }
     curY += gap;
 
-    // cancel / confirm
     float cbtnW = fieldW * 0.45f;
     float confirmX = fieldX + cbtnW + fieldW * 0.1f;
     _cancelBtn = sf::FloatRect({fieldX, curY}, {cbtnW, fieldH});

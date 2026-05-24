@@ -1,4 +1,3 @@
-// views/GanttGraphView.cpp
 #include "views/GanttGraphView.h"
 #include "UIHelpers.h"
 #include <algorithm>
@@ -47,6 +46,7 @@ void GanttGraphView::draw() {
     auto now = std::chrono::steady_clock::now();
     float elapsed = std::chrono::duration<float>(now - _appStartTime).count();
 
+    // freeze the timeline at the last task's end time once all tasks are done
     if (_allDone && !_scheduler.getTasks().empty()) {
         float lastEnd = 0.f;
         for (const auto& [id, task] : _scheduler.getTasks()) {
@@ -61,11 +61,10 @@ void GanttGraphView::draw() {
 
     float windowSecs = std::max(elapsed + 5.f, 5.f);
 
-    // time axis
     int numTicks = 8;
     for (int t = 0; t <= numTicks; t++) {
-        float frac    = (float)t / numTicks;
-        float tickX   = chartX + frac * chartW;
+        float frac = (float)t / numTicks;
+        float tickX = chartX + frac * chartW;
         float timeSec = frac * windowSecs;
 
         sf::RectangleShape tick({1, panelH - headerH + H * 0.01f});
@@ -80,7 +79,6 @@ void GanttGraphView::draw() {
         _window.draw(timeLabel);
     }
 
-    // thread rows
     for (int i = 0; i < numThreads; i++) {
         float rowY = chartY + i * rowH;
 
@@ -115,9 +113,9 @@ void GanttGraphView::draw() {
             float barY = rowY + rowH * 0.22f;
 
             sf::RectangleShape bar({x2 - x1, barH});
-            bar.setFillColor(UI::priorityBgColor(task->getPriority()));  // background = priority
+            bar.setFillColor(UI::priorityBgColor(task->getPriority()));
             bar.setOutlineThickness(1);
-            bar.setOutlineColor(UI::statusColor(task->getStatus()));      // border = status
+            bar.setOutlineColor(UI::statusColor(task->getStatus()));
             bar.setPosition({x1, barY});
             _window.draw(bar);
 
@@ -136,7 +134,6 @@ void GanttGraphView::draw() {
         }
     }
 
-    // now line
     sf::RectangleShape nowLine({2, panelH - headerH});
     nowLine.setFillColor(sf::Color(255, 80, 80));
     nowLine.setPosition({chartX + chartW, chartY});

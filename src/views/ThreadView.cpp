@@ -8,7 +8,7 @@ void ThreadView::draw() {
     float W = _window.getSize().x;
     float H = _window.getSize().y;
 
-    float panelW  = W * 0.15f;
+    float panelW = W * 0.15f;
     float clipTop = H * 0.07f;
     float clipBot = H - 2.f;
     float rowH = H * 0.07f;

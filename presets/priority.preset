@@ -1,4 +1,4 @@
-# 15 tasks, 10 threads — forces scheduler to choose
+# 15 tasks, 10 threads - forces scheduler to choose
 # HIGH (6 tasks) should fill threads first
 # MEDIUM and LOW wait for free threads
 

@@ -1,4 +1,4 @@
-# Stress test — 20 tasks, mixed priorities
+# Stress test - 20 tasks, mixed priorities, showcases how high priority tasks are run first
 task 1 CriticalCalc computation high
 task 2 UrgentFetch io high
 task 3 SecurityScan filecheck high

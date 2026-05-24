@@ -38,12 +38,12 @@ void TaskQueueView::draw() {
         else             low.push_back(task);
     }
 
-    float currentY      = H * 0.07f - _scrollOffset;
+    float currentY = H * 0.07f - _scrollOffset;
     float contentStartY = H * 0.07f;
-    float rowH          = H * 0.055f;
-    float labelSize     = H * 0.014f;
-    float clipTop       = H * 0.07f;
-    float clipBot       = panelH - 2.f;
+    float rowH = H * 0.055f;
+    float labelSize = H * 0.014f;
+    float clipTop = H * 0.07f;
+    float clipBot = panelH - 2.f;
 
     auto inBounds = [&](float y) {
         return y + rowH > clipTop && y < clipBot;

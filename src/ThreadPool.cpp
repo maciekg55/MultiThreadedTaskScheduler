@@ -1,8 +1,8 @@
 #include "ThreadPool.h"
 
 ThreadPool::ThreadPool() {
-    _threadCount = std::thread::hardware_concurrency();
-    if (_threadCount == 0) _threadCount = 4;
+    unsigned int hw = std::thread::hardware_concurrency();
+    _threadCount = hw > 1 ? hw - 1 : 1;  // reserve one for main/SFML thread
 
     _running = true;
     _workers.resize(_threadCount);
@@ -13,12 +13,13 @@ ThreadPool::ThreadPool() {
     }
 }
 
+
 ThreadPool::~ThreadPool() {
     {
         std::lock_guard lock(_mutex);
         _running = false;
     }
-    _cv.notify_all();  // wake all sleeping workers so they can exit
+    _cv.notify_all();
 
     for (auto& worker : _workers) {
         if (worker.thread.joinable())
@@ -31,7 +32,7 @@ void ThreadPool::submit(const std::shared_ptr<Task> &task) {
         std::lock_guard lock(_mutex);
         _taskQueue.push(task);
     }
-    _cv.notify_one();  // wake one sleeping worker
+    _cv.notify_one();
 }
 
 bool ThreadPool::hasFreeThread() const {
@@ -45,10 +46,11 @@ void ThreadPool::workerLoop(int workerId) {
         std::shared_ptr<Task> task;
         {
             std::unique_lock lock(_mutex);
-            _cv.wait(lock, [this] {
-                return !_taskQueue.empty() || !_running;
+            _cv.wait(lock, [this, workerId] {
+                return !_taskQueue.empty() || !_running || workerId >= (int)_threadCount;
             });
-            if (!_running && _taskQueue.empty()) return;
+            if ((!_running && _taskQueue.empty()) || workerId >= (int)_threadCount)
+                return;
             task = _taskQueue.front();
             _taskQueue.pop();
             _workers[workerId].currentTask = task;
@@ -83,13 +85,44 @@ void ThreadPool::restart() {
             worker.thread.join();
     }
 
-    // clear state
     while (!_taskQueue.empty()) _taskQueue.pop();
     for (auto& w : _workers) w.currentTask = nullptr;
 
-    // restart
     _running = true;
     for (unsigned int i = 0; i < _threadCount; i++) {
         _workers[i].thread = std::thread(&ThreadPool::workerLoop, this, i);
     }
 }
+
+
+void ThreadPool::setThreadCount(unsigned int count) {
+    unsigned int maxThreads = std::max(1u, std::thread::hardware_concurrency() - 1);
+    count = std::clamp(count, 1u, maxThreads);
+    if (count == _threadCount) return;
+
+    if (count < _threadCount) {
+        {
+            std::lock_guard lock(_mutex);
+            _threadCount = count;
+        }
+        _cv.notify_all();
+        for (unsigned int i = count; i < _workers.size(); i++) {
+            if (_workers[i].thread.joinable())
+                _workers[i].thread.join();
+        }
+        _workers.resize(count);
+    } else {
+        unsigned int oldCount = _threadCount;
+        _threadCount = count;
+        _workers.resize(count);
+        for (unsigned int i = oldCount; i < count; i++) {
+            _workers[i].id = i;
+            _workers[i].currentTask = nullptr;
+            _workers[i].status = Task::TaskStatus::Planned;
+            _workers[i].thread = std::thread(&ThreadPool::workerLoop, this, i);
+        }
+    }
+}
+
+
+

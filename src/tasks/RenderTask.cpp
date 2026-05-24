@@ -3,7 +3,7 @@
 
 RenderTask::RenderTask(int id, std::string name, std::vector<int> dependencies)
     : Task(id, std::move(name), 2, std::move(dependencies)) {
-    _estTime = 12;  // 100 iterations * 120ms
+    _estTime = 12;
 }
 
 void RenderTask::execute() {

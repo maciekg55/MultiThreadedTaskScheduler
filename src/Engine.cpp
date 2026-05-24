@@ -48,44 +48,44 @@ void Engine::handleEvents() {
         }
 
         if (event->is<sf::Event::MouseButtonPressed>()) {
-            sf::Vector2f mouse = {
-                (float)sf::Mouse::getPosition(_window).x,
-                (float)sf::Mouse::getPosition(_window).y
+            const sf::Vector2f mousePos = {
+                static_cast<float>(sf::Mouse::getPosition(_window).x),
+                static_cast<float>(sf::Mouse::getPosition(_window).y)
             };
 
-            bool noTasks = _scheduler.getTasks().empty();
+            const bool noTasks = _scheduler.getTasks().empty();
 
-            if (_renderer.getStartButtonRect().contains(mouse) && !_started && !noTasks) {
+            if (_renderer.getStartButtonRect().contains(mousePos) && !_started && !noTasks) {
                 _renderer.resetStartTime();
                 _scheduler.start();
                 _started = true;
                 _paused = false;
             }
 
-            if (_renderer.getPauseButtonRect().contains(mouse) && _started && !noTasks) {
+            if (_renderer.getPauseButtonRect().contains(mousePos) && _started && !noTasks) {
                 if (!_paused) { _scheduler.pause(); _paused = true; }
                 else { _scheduler.resume(); _paused = false; }
             }
 
-            if (_renderer.getStopButtonRect().contains(mouse) && _started && !noTasks) {
+            if (_renderer.getStopButtonRect().contains(mousePos) && _started && !noTasks) {
                 _scheduler.stop();
                 _started = false;
-                _paused  = false;
+                _paused = false;
                 _allDone = false;
                 _scheduler.reset();
                 _renderer.loadNextTaskId(-1);
                 _renderer.resetStartTime();
             }
 
-            _renderer.handleClick(mouse);
+            _renderer.handleClick(mousePos);
         }
 
         if (const auto* scroll = event->getIf<sf::Event::MouseWheelScrolled>()) {
-            sf::Vector2f mouse = {
-                (float)sf::Mouse::getPosition(_window).x,
-                (float)sf::Mouse::getPosition(_window).y
+            const sf::Vector2f mousePos = {
+                static_cast<float>(sf::Mouse::getPosition(_window).x),
+                static_cast<float>(sf::Mouse::getPosition(_window).y)
             };
-            _renderer.handleScroll(scroll->delta, mouse);
+            _renderer.handleScroll(scroll->delta, mousePos);
         }
 
         if (const auto* text = event->getIf<sf::Event::TextEntered>()) {
@@ -95,7 +95,7 @@ void Engine::handleEvents() {
 }
 
 void Engine::update() {
-    // calculate allDone
+
     if (_started) {
         _allDone = true;
         for (const auto& [id, task] : _scheduler.getTasks()) {
@@ -109,9 +109,18 @@ void Engine::update() {
         _allDone = false;
     }
 
+    int delta = _renderer.consumeThreadDelta();
+    if (delta != 0) {
+        unsigned int current = _scheduler.getThreadCount();
+        unsigned int maxT = std::max(1u, std::thread::hardware_concurrency() - 1);
+        unsigned int newCount = static_cast<unsigned int>(
+            std::clamp(static_cast<int>(current) + delta, 1, static_cast<int>(maxT))
+        );
+        _scheduler.setThreadCount(newCount);
+    }
+
     if (_renderer.hasPresetSelection() && !_started) {
-        std::string name = _renderer.consumePresetSelection();
-        if (name == "none") {
+        if (const std::string name = _renderer.consumePresetSelection(); name == "none") {
             _scheduler.reset();
             _renderer.loadNextTaskId(-1);
         } else {
@@ -119,7 +128,6 @@ void Engine::update() {
         }
     }
 
-    // add/edit/delete tasks
     if (_renderer.hasPendingAdd()) {
         auto task = _renderer.consumeTask();
         validateDeps(task);
@@ -143,7 +151,7 @@ void Engine::validateDeps(std::shared_ptr<Task>& task) {
     const auto& existing = _scheduler.getTasks();
     std::vector<int> validDeps;
     for (int depId : task->getDependencies()) {
-        if (depId == task->getId()) continue;  // skip self
+        if (depId == task->getId()) continue;
         if (existing.count(depId))
             validDeps.push_back(depId);
     }
@@ -154,95 +162,12 @@ void Engine::validateDeps(std::shared_ptr<Task>& task) {
 void Engine::render() {
     _window.clear(sf::Color(18, 18, 28));
     _renderer.setStatsState(_started, _paused, _allDone,
-                        (int)_scheduler.getTasks().size());
+                        static_cast<int>(_scheduler.getTasks().size()));
     _renderer.draw();
     _window.display();
 }
 
 
-void Engine::test() {
-    // === HIGH PRIORITY (5 tasks) ===
-    // these should jump the queue and run first
-    auto t1 = std::make_shared<ComputationTask>(1, "CriticalCalc", std::vector<int>{});
-    t1->setPriority(3);
-    _scheduler.addTask(t1);
-
-    auto t2 = std::make_shared<IOTask>(2, "UrgentFetch", std::vector<int>{});
-    t2->setPriority(3);
-    _scheduler.addTask(t2);
-
-    auto t3 = std::make_shared<FileCheckTask>(3, "SecurityScan", std::vector<int>{});
-    t3->setPriority(3);
-    _scheduler.addTask(t3);
-
-    auto t4 = std::make_shared<RenderTask>(4, "PriorityRender", std::vector<int>{3});
-    t4->setPriority(3);
-    _scheduler.addTask(t4);
-
-    auto t5 = std::make_shared<ComputationTask>(5, "CriticalProc", std::vector<int>{1});
-    t5->setPriority(3);
-    _scheduler.addTask(t5);
-
-    // === MEDIUM PRIORITY (10 tasks) ===
-    // mix of independent and chained
-    auto t6 = std::make_shared<ComputationTask>(6, "DataProcess1", std::vector<int>{});
-    _scheduler.addTask(t6);
-
-    auto t7 = std::make_shared<IOTask>(7, "DataFetch1", std::vector<int>{});
-    _scheduler.addTask(t7);
-
-    auto t8 = std::make_shared<ComputationTask>(8, "DataProcess2", std::vector<int>{7});
-    _scheduler.addTask(t8);
-
-    auto t9 = std::make_shared<FileCheckTask>(9, "FileCheck1", std::vector<int>{});
-    _scheduler.addTask(t9);
-
-    auto t10 = std::make_shared<IOTask>(10, "DataFetch2", std::vector<int>{9});
-    _scheduler.addTask(t10);
-
-    auto t11 = std::make_shared<RenderTask>(11, "Render1", std::vector<int>{8, 10});
-    _scheduler.addTask(t11);
-
-    auto t12 = std::make_shared<ComputationTask>(12, "DataProcess3", std::vector<int>{});
-    _scheduler.addTask(t12);
-
-    auto t13 = std::make_shared<IOTask>(13, "DataFetch3", std::vector<int>{12});
-    _scheduler.addTask(t13);
-
-    auto t14 = std::make_shared<FileCheckTask>(14, "FileCheck2", std::vector<int>{});
-    _scheduler.addTask(t14);
-
-    auto t15 = std::make_shared<RenderTask>(15, "Render2", std::vector<int>{13, 14});
-    _scheduler.addTask(t15);
-
-    // === LOW PRIORITY (5 tasks) ===
-    // cleanup and logging — should run last
-    auto t16 = std::make_shared<FileCheckTask>(16, "Cleanup1", std::vector<int>{11});
-    t16->setPriority(1);
-    _scheduler.addTask(t16);
-
-    auto t17 = std::make_shared<FileCheckTask>(17, "Cleanup2", std::vector<int>{15});
-    t17->setPriority(1);
-    _scheduler.addTask(t17);
-
-    auto t18 = std::make_shared<ComputationTask>(18, "LogProcess", std::vector<int>{});
-    t18->setPriority(1);
-    _scheduler.addTask(t18);
-
-    auto t19 = std::make_shared<IOTask>(19, "LogWrite", std::vector<int>{18});
-    t19->setPriority(1);
-    _scheduler.addTask(t19);
-
-    auto t20 = std::make_shared<FileCheckTask>(20, "FinalCheck", std::vector<int>{16, 17, 19});
-    t20->setPriority(1);
-    _scheduler.addTask(t20);
-
-    int maxId = 0;
-    for (const auto& [id, task] : _scheduler.getTasks()) {
-        maxId = std::max(maxId, id);
-    }
-    _renderer.loadNextTaskId(maxId);
-}
 
 void Engine::loadPreset(const std::string& filepath) {
     _scheduler.reset();

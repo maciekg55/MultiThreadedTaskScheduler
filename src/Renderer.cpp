@@ -42,7 +42,7 @@ void Renderer::handleTextInput(uint32_t unicode) {
 }
 
 void Renderer::handleClick(sf::Vector2f mousePos) {
-
+    _statsBar.handleClick(mousePos);
     _presetSelector.handleClick(mousePos);
 
     if (_formView.isVisible()) {
@@ -50,9 +50,6 @@ void Renderer::handleClick(sf::Vector2f mousePos) {
         return;
     }
 
-
-
-    // helper to select/deselect a task in both detail and graph views
     auto selectTask = [&](int id) {
         int current = _taskDetailsView.getSelectedTask();
         int newId = (current == id) ? -1 : id;
@@ -60,17 +57,14 @@ void Renderer::handleClick(sf::Vector2f mousePos) {
         _dependencyView.setSelectedTask(newId);
     };
 
-    // task row selection in queue panel
     for (const auto& [id, rect] : _taskQueueView.getTaskRowRects()) {
         if (rect.contains(mousePos)) { selectTask(id); return; }
     }
 
-    // node click in dependency graph
     for (const auto& [id, rect] : _dependencyView.getNodeRects()) {
         if (rect.contains(mousePos)) { selectTask(id); return; }
     }
 
-    // delete button
     if (_taskDetailsView.getDeleteBtn() != sf::FloatRect{} &&
         _taskDetailsView.getDeleteBtn().contains(mousePos)) {
         _deleteTaskId = _taskDetailsView.getSelectedTask();
@@ -80,7 +74,6 @@ void Renderer::handleClick(sf::Vector2f mousePos) {
         return;
         }
 
-    // edit button
     if (_taskDetailsView.getEditBtn() != sf::FloatRect{} &&
         _taskDetailsView.getEditBtn().contains(mousePos)) {
         int selectedId = _taskDetailsView.getSelectedTask();
@@ -90,7 +83,6 @@ void Renderer::handleClick(sf::Vector2f mousePos) {
         return;
         }
 
-    // add task button
     if (_statsBar.getAddBtn().contains(mousePos)) {
         _formView.openForAdd();
         return;

@@ -1,4 +1,3 @@
-// views/TaskDetailsView.cpp
 #include "views/TaskDetailsView.h"
 #include "UIHelpers.h"
 #include <unordered_map>
@@ -10,13 +9,13 @@ void TaskDetailsView::draw() {
     float W = _window.getSize().x;
     float H = _window.getSize().y;
 
-    float panelX    = W * 0.70f;
-    float panelW    = W * 0.30f;
-    float panelY    = H * 0.55f;
-    float panelH    = H - panelY - H * 0.07f;
-    float contentX  = panelX + panelW * 0.06f;
+    float panelX = W * 0.70f;
+    float panelW = W * 0.30f;
+    float panelY = H * 0.55f;
+    float panelH = H - panelY - H * 0.07f;
+    float contentX = panelX + panelW * 0.06f;
     float labelSize = H * 0.013f;
-    float lineH     = H * 0.033f;
+    float lineH = H * 0.033f;
 
     sf::RectangleShape bg({panelW, panelH});
     bg.setFillColor(sf::Color(25, 25, 38));
@@ -39,7 +38,6 @@ void TaskDetailsView::draw() {
     divider.setPosition({panelX + 1, panelY + H * 0.044f});
     _window.draw(divider);
 
-    // find selected
     std::shared_ptr<Task> selected = nullptr;
     const auto& allTasks = _scheduler.getTasks();
 
@@ -63,7 +61,7 @@ void TaskDetailsView::draw() {
         none.setPosition({contentX, panelY + H * 0.08f});
         _window.draw(none);
         _deleteBtn = {};
-        _editBtn   = {};
+        _editBtn = {};
         return;
     }
 
@@ -106,7 +104,7 @@ void TaskDetailsView::draw() {
     static const std::unordered_map<Task::TaskStatus, std::string> statusLabels{
         {Task::TaskStatus::Planned, "Planned"},
         {Task::TaskStatus::Running,"Running"},
-        {Task::TaskStatus::Queued,    "Queued"},
+        {Task::TaskStatus::Queued, "Queued"},
         {Task::TaskStatus::Completed,"Completed"},
         {Task::TaskStatus::Cancelled,"Cancelled"},
     };
@@ -115,7 +113,6 @@ void TaskDetailsView::draw() {
     std::string statusStr = statusIt != statusLabels.end() ? statusIt->second : "Unknown";
     drawRow("Status:", statusStr, UI::statusColor(selected->getStatus()), y); y += lineH;
 
-    // progress
     sf::Text progressLabel(_font, "Progress:");
     progressLabel.setCharacterSize(labelSize);
     progressLabel.setFillColor(sf::Color(120, 120, 120));
@@ -146,7 +143,6 @@ void TaskDetailsView::draw() {
     _window.draw(pct);
     y += lineH * 1.4f;
 
-    // thread
     const auto& workers = _scheduler.getWorkers();
     std::string threadStr = "None";
     for (const auto& worker : workers) {
@@ -158,7 +154,6 @@ void TaskDetailsView::draw() {
     drawRow("Thread:", threadStr, sf::Color(180, 255, 180), y);
     y += lineH * 1.2f;
 
-    // edit/delete only for planned
     if (selected->getStatus() == Task::TaskStatus::Planned) {
         float btnW = panelW * 0.38f;
         float btnH = lineH * 0.95f;
@@ -175,7 +170,7 @@ void TaskDetailsView::draw() {
                             y + btnH * 0.15f});
         _window.draw(delTxt);
 
-        float editX  = contentX + btnW + panelW * 0.04f;
+        float editX = contentX + btnW + panelW * 0.04f;
         _editBtn = sf::FloatRect({editX, y}, {btnW, btnH});
         sf::RectangleShape editBg({btnW, btnH});
         editBg.setFillColor(sf::Color(40, 80, 140));
@@ -189,6 +184,6 @@ void TaskDetailsView::draw() {
         _window.draw(editTxt);
     } else {
         _deleteBtn = {};
-        _editBtn   = {};
+        _editBtn = {};
     }
 }

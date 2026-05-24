@@ -57,7 +57,8 @@ void StatsBar::draw() {
         val.setFillColor(color);
         val.setPosition({cursorX, centerY});
         _window.draw(val);
-        cursorX += val.getLocalBounds().size.x + W * 0.03f;
+        cursorX += val.getLocalBounds().size.x + W * 0.015f;
+
     };
 
     drawStat("Total",total, sf::Color::White);
@@ -66,7 +67,48 @@ void StatsBar::draw() {
     drawStat("Completed",completed,sf::Color(100, 100, 255));
     drawStat("Planned",planned,sf::Color(120, 120, 120));
 
-    // buttons
+    unsigned int maxThreads = std::max(1u, std::thread::hardware_concurrency() - 1);
+    unsigned int curThreads = _scheduler.getWorkers().size();
+
+    sf::Text threadLabel(_font, "Threads: " + std::to_string(curThreads));
+    threadLabel.setCharacterSize(labelSize);
+    threadLabel.setFillColor(sf::Color(120, 120, 120));
+    threadLabel.setPosition({cursorX, centerY});
+    _window.draw(threadLabel);
+    cursorX += threadLabel.getLocalBounds().size.x + 8;
+
+    float smallBtnW = H * 0.035f;
+    float smallBtnH = barH * 0.55f;
+    float smallBtnY = barY + barH * 0.22f;
+
+    bool canDecrease = !_started && curThreads > 1;
+    bool canIncrease = !_started && curThreads < maxThreads;
+
+    _threadMinusBtn = sf::FloatRect({cursorX, smallBtnY}, {smallBtnW, smallBtnH});
+    sf::RectangleShape minusBg({smallBtnW, smallBtnH});
+    minusBg.setFillColor(canDecrease ? sf::Color(80, 40, 40) : sf::Color(40, 40, 40));
+    minusBg.setPosition({cursorX, smallBtnY});
+    _window.draw(minusBg);
+    sf::Text minusTxt(_font, "-");
+    minusTxt.setCharacterSize(labelSize);
+    minusTxt.setFillColor(canDecrease ? sf::Color::White : sf::Color(80, 80, 80));
+    minusTxt.setPosition({cursorX + (smallBtnW - minusTxt.getLocalBounds().size.x) * 0.5f,
+                          smallBtnY + (smallBtnH - labelSize) * 0.4f});
+    _window.draw(minusTxt);
+    cursorX += smallBtnW + 2;
+    _threadPlusBtn = sf::FloatRect({cursorX, smallBtnY}, {smallBtnW, smallBtnH});
+    sf::RectangleShape plusBg({smallBtnW, smallBtnH});
+    plusBg.setFillColor(canIncrease ? sf::Color(40, 80, 40) : sf::Color(40, 40, 40));
+    plusBg.setPosition({cursorX, smallBtnY});
+    _window.draw(plusBg);
+    sf::Text plusTxt(_font, "+");
+    plusTxt.setCharacterSize(labelSize);
+    plusTxt.setFillColor(canIncrease ? sf::Color::White : sf::Color(80, 80, 80));
+    plusTxt.setPosition({cursorX + (smallBtnW - plusTxt.getLocalBounds().size.x) * 0.5f,
+                         smallBtnY + (smallBtnH - labelSize) * 0.4f});
+    _window.draw(plusTxt);
+    cursorX += smallBtnW + W * 0.02f;
+
     float btnW = W * 0.07f;
     float btnH = barH * 0.60f;
     float btnY = barY + barH * 0.20f;
@@ -74,10 +116,10 @@ void StatsBar::draw() {
 
     struct Btn { std::string label; sf::Color color; sf::FloatRect* rect; };
     std::vector<Btn> buttons = {
-        {"Add Task", sf::Color(60,  60,  160), &_addBtn  },
-        {"Start",sf::Color(0,   160, 80),&_startBtn},
-        {"Pause",sf::Color(180, 140, 0),&_pauseBtn},
-        {"Stop", sf::Color(180, 40,  40),&_stopBtn },
+        {"Add Task", sf::Color(60, 60, 160), &_addBtn},
+        {"Start", sf::Color(0, 160, 80), &_startBtn},
+        {"Pause", sf::Color(180, 140, 0), &_pauseBtn},
+        {"Stop", sf::Color(180, 40, 40), &_stopBtn},
     };
 
     for (auto& btn : getButtons()) {

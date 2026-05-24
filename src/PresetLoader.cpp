@@ -20,7 +20,6 @@ std::vector<TaskPreset> PresetLoader::load(const std::string& filepath) {
 
     std::string line;
     while (std::getline(file, line)) {
-        // skip comments and empty lines
         if (line.empty() || line[0] == '#') continue;
 
         std::istringstream ss(line);

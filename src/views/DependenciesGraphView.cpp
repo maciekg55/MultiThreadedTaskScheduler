@@ -41,7 +41,7 @@ void DependenciesGraphView::draw() {
     const auto& tasks = _scheduler.getTasks();
     if (tasks.empty()) return;
 
-    // calculate depth
+    // assign each task a column equal to its longest dependency chain length
     std::unordered_map<int, int> depth;
     for (const auto& [id, task] :tasks) depth[id] = 0;
 
@@ -58,7 +58,6 @@ void DependenciesGraphView::draw() {
         }
     }
 
-    // group by column
     std::map<int, std::vector<int>> columns;
     for (const auto& [id, d] :depth) columns[d].push_back(id);
     int numCols = columns.size();
@@ -67,10 +66,9 @@ void DependenciesGraphView::draw() {
     float graphY = panelY +H * 0.06f;
     float graphW = panelW * 0.92f;
     float graphH = panelH - H * 0.08f;
-    float nodeW  = std::min(graphW /(numCols *2.0f),W * 0.08f);
-    float nodeH  = H * 0.055f;
+    float nodeW = std::min(graphW /(numCols *2.0f),W * 0.08f);
+    float nodeH = H * 0.055f;
 
-    // node positions
     std::unordered_map<int, sf::Vector2f> nodePos;
     for (auto& [col, ids] : columns) {
         int numRows = ids.size();
@@ -81,7 +79,6 @@ void DependenciesGraphView::draw() {
         }
     }
 
-    // arrows
     for (const auto& [id, task] : tasks) {
         for (int depId :task->getDependencies()) {
             if (!nodePos.count(id) || !nodePos.count(depId)) continue;
@@ -118,7 +115,6 @@ void DependenciesGraphView::draw() {
     }
 
 
-    // nodes
     _nodeRects.clear();
     for (const auto& [id, task] :tasks) {
         if (!nodePos.count(id)) continue;

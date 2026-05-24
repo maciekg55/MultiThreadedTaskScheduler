@@ -3,7 +3,7 @@
 
 IOTask::IOTask(int id, std::string name, std::vector<int> dependencies)
     : Task(id, std::move(name), 2, std::move(dependencies)) {
-    _estTime = 20;  // 100 iterations * 200ms
+    _estTime = 20;
 }
 
 void IOTask::execute() {

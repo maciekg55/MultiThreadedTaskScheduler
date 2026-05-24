@@ -14,13 +14,11 @@ std::string PresetSelectorView::consumeSelection() {
 }
 
 void PresetSelectorView::handleClick(sf::Vector2f mouse) {
-    // toggle dropdown
     if (_selectorRect.contains(mouse)) {
         _dropdownOpen = !_dropdownOpen;
         return;
     }
 
-    // select from dropdown
     if (_dropdownOpen) {
         for (int i = 0; i < (int)_dropdownRects.size(); i++) {
             if (_dropdownRects[i].contains(mouse)) {
@@ -31,7 +29,6 @@ void PresetSelectorView::handleClick(sf::Vector2f mouse) {
                 return;
             }
         }
-        // click outside dropdown — close it
         _dropdownOpen = false;
     }
 }
@@ -48,13 +45,11 @@ void PresetSelectorView::draw() {
     float btnH = barH * 0.60f;
     float btnY = barY + barH * 0.20f;
 
-    // position — sits left of the Add Task button
     float btnW = W * 0.10f;
     float btnX = W - (W * 0.07f + W * 0.01f) * 4 - W * 0.02f - btnW - W * 0.01f;
 
     _selectorRect = sf::FloatRect({btnX, btnY}, {btnW, btnH});
 
-    // selector background
     sf::RectangleShape bg({btnW, btnH});
     bg.setFillColor(sf::Color(40, 40, 65));
     bg.setOutlineThickness(1);
@@ -62,7 +57,6 @@ void PresetSelectorView::draw() {
     bg.setPosition({btnX, btnY});
     _window.draw(bg);
 
-    // current selection label
     std::string label = _presets.empty() ? "No presets" : _presets[_selectedIndex];
     sf::Text txt(_font, label);
     txt.setCharacterSize(labelSize * 0.85f);
@@ -73,12 +67,10 @@ void PresetSelectorView::draw() {
     sf::ConvexShape arrow;
     arrow.setPointCount(3);
     if (_dropdownOpen) {
-        // pointing up when open
         arrow.setPoint(0, {0, 6});
         arrow.setPoint(1, {6, 0});
         arrow.setPoint(2, {12, 6});
     } else {
-        // pointing down when closed
         arrow.setPoint(0, {0, 0});
         arrow.setPoint(1, {12, 0});
         arrow.setPoint(2, {6, 6});
@@ -87,7 +79,6 @@ void PresetSelectorView::draw() {
     arrow.setPosition({btnX + btnW - 18, btnY + btnH * 0.45f});
     _window.draw(arrow);
 
-    // dropdown
     if (_dropdownOpen) {
         float dropY = btnY - _presets.size() * btnH;
         _dropdownRects.clear();
