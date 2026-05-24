@@ -1,0 +1,9 @@
+# Default preset — basic dependency chain
+task 1 DataLoading computation medium
+task 2 DataProcessing computation medium 1
+task 3 FileCheck filecheck medium
+task 4 Validation io medium 3
+task 5 SaveResults render medium 2 4
+task 6 Cleanup filecheck low 5
+task 7 DataBackup computation high
+task 8 ReportGen io high

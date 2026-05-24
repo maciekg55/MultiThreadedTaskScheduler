@@ -32,7 +32,7 @@ public:
     ThreadPool();
     ~ThreadPool();
 
-    void submit(std::shared_ptr<Task> task);
+    void submit(const std::shared_ptr<Task> &task);
     bool hasFreeThread() const;
 
     const std::vector<WorkerThread>& getWorkers() const { return _workers; }

@@ -7,7 +7,7 @@ Scheduler::~Scheduler() {
     stop();
 }
 
-void Scheduler::addTask(std::shared_ptr<Task> task) {
+void Scheduler::addTask(const std::shared_ptr<Task> &task) {
     std::lock_guard lock(_mutex);
     _tasks[task->getId()] = task;
     _queue.push_back(task);
@@ -31,13 +31,13 @@ void Scheduler::resume() {
 void Scheduler::stop() {
 
     {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::lock_guard lock(_mutex);
         for (auto& [id, task] : _tasks)
             task->cancel();
     }
 
     _running = false;
-    _paused  = false;
+    _paused= false;
 
     if (_schedulerThread.joinable())
         _schedulerThread.join();
@@ -48,7 +48,7 @@ void Scheduler::stop() {
 bool Scheduler::isReady(const std::shared_ptr<Task>& task) const {
     for (int depId : task->getDependencies()) {
         auto it = _tasks.find(depId);
-        if (it == _tasks.end()) return false;
+        if (it ==_tasks.end()) return false;
         if (it->second->getStatus() != Task::TaskStatus::Completed) return false;
     }
     return true;
@@ -62,7 +62,8 @@ std::shared_ptr<Task> Scheduler::pickNext() {
         if (task->getStatus() != Task::TaskStatus::Planned) continue;
         if (!isReady(task)) continue;
 
-        int ep = getEffectivePriority(task);
+        std::unordered_set<int> visited;
+        int ep = getEffectivePriorityHelper(task, visited);
         if (ep > bestPriority) {
             bestPriority = ep;
             best = task;
@@ -70,11 +71,12 @@ std::shared_ptr<Task> Scheduler::pickNext() {
     }
     return best;
 }
+
+
 void Scheduler::schedulerLoop() {
     while (_running) {
         if (!_paused) {
             std::vector<std::shared_ptr<Task>> toSubmit;
-
             {
                 std::lock_guard lock(_mutex);
 
@@ -93,7 +95,7 @@ void Scheduler::schedulerLoop() {
                 while (_threadPool.hasFreeThread()) {
                     auto task = pickNext();
                     if (!task) break;
-                    task->setStatus(Task::TaskStatus::Running);
+                    task->setStatus(Task::TaskStatus::Queued);
                     toSubmit.push_back(task);
                 }
             }
@@ -111,7 +113,7 @@ void Scheduler::schedulerLoop() {
                 } else {
                     for (const auto& [id, task] : _tasks) {
                         if (task->getStatus() != Task::TaskStatus::Completed &&
-                            task->getStatus() != Task::TaskStatus::Cancelled) {
+                            task->getStatus()!=Task::TaskStatus::Cancelled) {
                             allDone = false;
                             break;
                             }
@@ -123,25 +125,25 @@ void Scheduler::schedulerLoop() {
                 _running = false;
                 break;
             }
+
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 
-int Scheduler::getEffectivePriority(const std::shared_ptr<Task>& task) const {
-    int maxPriority = task->getPriority();
+int Scheduler::getEffectivePriorityHelper(const std::shared_ptr<Task>& task,
+                                           std::unordered_set<int>& visited) const {
+    if (visited.count(task->getId())) return task->getPriority();
+    visited.insert(task->getId());
 
-    // check if any other task depends on this one
+    int maxPriority = task->getPriority();
     for (const auto& [id, other] : _tasks) {
         if (other->getStatus() == Task::TaskStatus::Completed) continue;
         if (other->getStatus() == Task::TaskStatus::Cancelled) continue;
-
         for (int depId : other->getDependencies()) {
             if (depId == task->getId()) {
-                // other task depends on us — inherit its effective priority
-                int inherited = getEffectivePriority(other);
-                if (inherited > maxPriority)
-                    maxPriority = inherited;
+                int inherited = getEffectivePriorityHelper(other, visited);
+                if (inherited > maxPriority) maxPriority = inherited;
             }
         }
     }

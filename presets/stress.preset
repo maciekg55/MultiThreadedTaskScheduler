@@ -1,0 +1,21 @@
+# Stress test — 20 tasks, mixed priorities
+task 1 CriticalCalc computation high
+task 2 UrgentFetch io high
+task 3 SecurityScan filecheck high
+task 4 PriorityRender render high 3
+task 5 CriticalProc computation high 1
+task 6 DataProcess1 computation medium
+task 7 DataFetch1 io medium
+task 8 DataProcess2 computation medium 7
+task 9 FileCheck1 filecheck medium
+task 10 DataFetch2 io medium 9
+task 11 Render1 render medium 8 10
+task 12 DataProcess3 computation medium
+task 13 DataFetch3 io medium 12
+task 14 FileCheck2 filecheck medium
+task 15 Render2 render medium 13 14
+task 16 Cleanup1 filecheck low 11
+task 17 Cleanup2 filecheck low 15
+task 18 LogProcess computation low
+task 19 LogWrite io low 18
+task 20 FinalCheck filecheck low 16 17 19

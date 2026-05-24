@@ -10,8 +10,8 @@ add_executable(${PROJECT_NAME}
         src/main.cpp
         src/Task.cpp
         include/Task.h
-        src/ComputationTask.cpp
-        include/ComputationTask.h
+        src/tasks/ComputationTask.cpp
+        include/tasks/ComputationTask.h
         src/Scheduler.cpp
         include/Scheduler.h
         src/ThreadPool.cpp
@@ -20,12 +20,12 @@ add_executable(${PROJECT_NAME}
         include/Engine.h
         src/Renderer.cpp
         include/Renderer.h
-        src/IOTask.cpp
-        include/IOTask.h
-        src/FileCheckTask.cpp
-        include/FileCheckTask.h
-        src/RenderTask.cpp
-        include/RenderTask.h
+        src/tasks/IOTask.cpp
+        include/tasks/IOTask.h
+        src/tasks/FileCheckTask.cpp
+        include/tasks/FileCheckTask.h
+        src/tasks/RenderTask.cpp
+        include/tasks/RenderTask.h
         include/views/ThreadView.h
         include/views/GanttGraphView.h
         include/views/DependenciesGraphView.h
@@ -42,10 +42,15 @@ add_executable(${PROJECT_NAME}
         include/UIHelpers.h
         src/views/AddTaskFormView.cpp
         include/views/AddTaskFormView.h
+        src/PresetLoader.cpp
+        include/PresetLoader.h
+        src/views/PresetSelectorView.cpp
+        include/views/PresetSelectorView.h
 )
 
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/presets DESTINATION ${CMAKE_BINARY_DIR})
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 

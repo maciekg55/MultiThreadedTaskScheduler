@@ -1,0 +1,19 @@
+# 15 tasks, 10 threads — forces scheduler to choose
+# HIGH (6 tasks) should fill threads first
+# MEDIUM and LOW wait for free threads
+
+task 1 HighCalc1 io high
+task 2 HighCalc2 io high
+task 3 HighCalc3 io high
+task 4 HighCalc4 io high
+task 5 HighFetch1 io high
+task 6 HighFetch2 io high
+task 7 MedCalc1 io medium
+task 8 MedCalc2 io medium
+task 9 MedFetch1 io medium
+task 10 MedFetch2 io medium
+task 11 LowCalc1 io low
+task 12 LowCalc2 io low
+task 13 LowCalc3 io low
+task 14 LowFetch1 io low
+task 15 LowFetch2 io low

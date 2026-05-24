@@ -7,12 +7,17 @@ class GanttGraphView {
 public:
     GanttGraphView(sf::RenderWindow& window, sf::Font& font, Scheduler& scheduler);
     void draw();
+
     void resetStartTime() { _appStartTime = std::chrono::steady_clock::now(); }
+    void setAllDone(bool allDone) { _allDone = allDone; }
+    void setStarted(bool started) { _started = started; }
 
 private:
     sf::RenderWindow& _window;
-    sf::Font&         _font;
-    Scheduler&        _scheduler;
+    sf::Font& _font;
+    Scheduler&_scheduler;
 
     std::chrono::steady_clock::time_point _appStartTime;
+    bool _allDone = false;
+    bool _started = false;
 };

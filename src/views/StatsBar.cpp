@@ -22,12 +22,20 @@ void StatsBar::draw() {
     _window.draw(divider);
 
     const auto& tasks = _scheduler.getTasks();
-    int total = tasks.size(), running = 0, waiting = 0, completed = 0, planned = 0;
+
+    int total = tasks.size();
+    int running = 0;
+    int queued = 0;
+    int completed = 0;
+    int planned = 0;
+
     for (const auto& [id, task] : tasks) {
         switch (task->getStatus()) {
             case Task::TaskStatus::Running: running++;break;
             case Task::TaskStatus::Completed: completed++;break;
             case Task::TaskStatus::Planned: planned++; break;
+            case Task::TaskStatus::Queued: queued++; break;
+
             default: break;
         }
     }
@@ -54,7 +62,7 @@ void StatsBar::draw() {
 
     drawStat("Total",total, sf::Color::White);
     drawStat("Running",running, sf::Color(0,   200, 100));
-    drawStat("Waiting",waiting,sf::Color(255, 165, 0));
+    drawStat("Queued",queued,sf::Color(255, 165, 0));
     drawStat("Completed",completed,sf::Color(100, 100, 255));
     drawStat("Planned",planned,sf::Color(120, 120, 120));
 

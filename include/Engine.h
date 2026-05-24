@@ -1,5 +1,6 @@
 #pragma once
 #include "Renderer.h"
+#include "PresetLoader.h"
 
 class Engine {
 private:
@@ -20,4 +21,5 @@ private:
     void render();
     void validateDeps(std::shared_ptr<Task>& task);
     void test();
+    void loadPreset(const std::string& filepath);
 };

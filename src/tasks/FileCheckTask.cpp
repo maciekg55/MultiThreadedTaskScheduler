@@ -1,4 +1,4 @@
-#include "../include/FileCheckTask.h"
+#include "tasks/FileCheckTask.h"
 #include <thread>
 
 FileCheckTask::FileCheckTask(int id, std::string name, std::vector<int> dependencies)

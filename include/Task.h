@@ -7,6 +7,7 @@ class Task {
 public:
     enum class TaskStatus {
         Planned,
+        Queued,
         Running,
         Completed,
         Cancelled,

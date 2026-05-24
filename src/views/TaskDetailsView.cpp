@@ -103,12 +103,14 @@ void TaskDetailsView::draw() {
     if (depsStr.empty()) depsStr = "None";
     drawRow("Depends on:", depsStr, sf::Color(180, 180, 255), y); y += lineH;
 
-    static const std::unordered_map<Task::TaskStatus, std::string> statusLabels = {
+    static const std::unordered_map<Task::TaskStatus, std::string> statusLabels{
         {Task::TaskStatus::Planned, "Planned"},
         {Task::TaskStatus::Running,"Running"},
+        {Task::TaskStatus::Queued,    "Queued"},
         {Task::TaskStatus::Completed,"Completed"},
         {Task::TaskStatus::Cancelled,"Cancelled"},
     };
+
     auto statusIt = statusLabels.find(selected->getStatus());
     std::string statusStr = statusIt != statusLabels.end() ? statusIt->second : "Unknown";
     drawRow("Status:", statusStr, UI::statusColor(selected->getStatus()), y); y += lineH;

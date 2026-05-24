@@ -1,4 +1,4 @@
-#include "../include/IOTask.h"
+#include "tasks/IOTask.h"
 #include <thread>
 
 IOTask::IOTask(int id, std::string name, std::vector<int> dependencies)

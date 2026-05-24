@@ -34,17 +34,32 @@ void GanttGraphView::draw() {
     divider.setPosition({panelX + 1, H * 0.055f});
     _window.draw(divider);
 
+    if (!_started) return;
+
     const auto& workers = _scheduler.getWorkers();
     int   numThreads = workers.size();
-    float headerH    = H * 0.07f;
-    float rowH       = (panelH - headerH) / std::max(numThreads, 1);
-    float chartX     = panelX + panelW * 0.08f;
-    float chartW     = panelW * 0.88f;
-    float chartY     = headerH;
+    float headerH = H * 0.07f;
+    float rowH = (panelH - headerH) / std::max(numThreads, 1);
+    float chartX = panelX + panelW * 0.08f;
+    float chartW = panelW * 0.88f;
+    float chartY = headerH;
 
-    auto  now        = std::chrono::steady_clock::now();
-    float elapsed    = std::chrono::duration<float>(now - _appStartTime).count();
-    float windowSecs = std::max(elapsed + 5.f, 30.f);
+    auto now = std::chrono::steady_clock::now();
+    float elapsed = std::chrono::duration<float>(now - _appStartTime).count();
+
+    if (_allDone && !_scheduler.getTasks().empty()) {
+        float lastEnd = 0.f;
+        for (const auto& [id, task] : _scheduler.getTasks()) {
+            if (task->hasEnded()) {
+                float taskEnd = std::chrono::duration<float>(
+                    task->getEndTime() - _appStartTime).count();
+                lastEnd = std::max(lastEnd, taskEnd);
+            }
+        }
+        elapsed = lastEnd;
+    }
+
+    float windowSecs = std::max(elapsed + 5.f, 5.f);
 
     // time axis
     int numTicks = 8;
@@ -90,8 +105,8 @@ void GanttGraphView::draw() {
                 ? std::chrono::duration<float>(task->getEndTime() - _appStartTime).count()
                 : elapsed;
 
-            float x1 = chartX + (taskStart / windowSecs) * chartW;
-            float x2 = chartX + (taskEnd   / windowSecs) * chartW;
+            float x1 = chartX +(taskStart/windowSecs) * chartW;
+            float x2 = chartX +(taskEnd/windowSecs) * chartW;
             x1 = std::max(x1, chartX);
             x2 = std::min(x2, chartX + chartW);
             if (x2 <= x1) continue;
@@ -100,9 +115,16 @@ void GanttGraphView::draw() {
             float barY = rowY + rowH * 0.22f;
 
             sf::RectangleShape bar({x2 - x1, barH});
-            bar.setFillColor(UI::statusColor(task->getStatus()));
+            bar.setFillColor(UI::priorityBgColor(task->getPriority()));  // background = priority
+            bar.setOutlineThickness(1);
+            bar.setOutlineColor(UI::statusColor(task->getStatus()));      // border = status
             bar.setPosition({x1, barY});
             _window.draw(bar);
+
+            sf::RectangleShape stripe({3, barH});
+            stripe.setFillColor(UI::statusColor(task->getStatus()));
+            stripe.setPosition({x1, barY});
+            _window.draw(stripe);
 
             if (x2 - x1 > 30) {
                 sf::Text barLabel(_font, task->getName());

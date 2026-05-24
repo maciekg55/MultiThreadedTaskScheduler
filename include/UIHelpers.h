@@ -7,4 +7,7 @@ namespace UI {
     sf::Color   statusColor    (Task::TaskStatus status);
     std::string priorityStr    (int priority);
     sf::Color   priorityColor  (int priority);
+    sf::Color priorityBgColor(int priority);
+
 }
+

@@ -1,4 +1,4 @@
-#include "../include/RenderTask.h"
+#include "tasks/RenderTask.h"
 #include <thread>
 
 RenderTask::RenderTask(int id, std::string name, std::vector<int> dependencies)

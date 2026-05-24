@@ -26,9 +26,9 @@ ThreadPool::~ThreadPool() {
     }
 }
 
-void ThreadPool::submit(std::shared_ptr<Task> task) {
+void ThreadPool::submit(const std::shared_ptr<Task> &task) {
     {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::lock_guard lock(_mutex);
         _taskQueue.push(task);
     }
     _cv.notify_one();  // wake one sleeping worker
@@ -57,6 +57,7 @@ void ThreadPool::workerLoop(int workerId) {
 
         task->setAssignedThread(workerId);
         task->markStarted();
+        task->setStatus(Task::TaskStatus::Running);
         task->execute();
         task->markEnded();
         task->setStatus(Task::TaskStatus::Completed);

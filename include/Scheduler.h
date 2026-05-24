@@ -7,6 +7,7 @@
 #include <condition_variable>
 #include "Task.h"
 #include "ThreadPool.h"
+#include <unordered_set>
 
 class Scheduler {
 private:
@@ -29,7 +30,7 @@ public:
     Scheduler();
     ~Scheduler();
 
-    void addTask(std::shared_ptr<Task> task);
+    void addTask(const std::shared_ptr<Task> &task);
     void start();
     void stop();
 
@@ -54,6 +55,7 @@ public:
             _queue.end());
     }
 private:
-    int getEffectivePriority(const std::shared_ptr<Task>& task) const;
+    int getEffectivePriorityHelper(const std::shared_ptr<Task>& task,
+                                std::unordered_set<int>& visited) const;
 
 };

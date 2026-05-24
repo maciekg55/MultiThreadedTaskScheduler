@@ -1,9 +1,9 @@
 
 #include "views/AddTaskFormView.h"
-#include "ComputationTask.h"
-#include "IOTask.h"
-#include "FileCheckTask.h"
-#include "RenderTask.h"
+#include "tasks/ComputationTask.h"
+#include "tasks/IOTask.h"
+#include "tasks/FileCheckTask.h"
+#include "tasks/RenderTask.h"
 
 AddTaskFormView::AddTaskFormView(sf::RenderWindow& window, sf::Font& font)
     : _window(window), _font(font) {}
@@ -45,16 +45,18 @@ void AddTaskFormView::handleTextInput(uint32_t unicode) {
 
 void AddTaskFormView::handleClick(sf::Vector2f mouse) {
     if (!_visible) return;
-
     float W = _window.getSize().x;
     float H = _window.getSize().y;
+
     float formW = W * 0.35f;
     float formH = H * 0.65f;
     float formX = (W - formW) * 0.5f;
     float formY = (H - formH) * 0.5f;
+
     float fieldX = formX + formW * 0.06f;
     float fieldW = formW * 0.88f;
     float fieldH = H * 0.048f;
+
     float gap = H * 0.085f;
     float labelH = H * 0.015f * 1.4f;
     float curY = formY + formH * 0.14f;
@@ -84,7 +86,7 @@ void AddTaskFormView::handleClick(sf::Vector2f mouse) {
 
     if (_cancelBtn.contains(mouse)) {
         _visible = false;
-        _editMode = false;
+        _editMode =false;
         clearForm();
         return;
     }
@@ -115,10 +117,10 @@ std::shared_ptr<Task> AddTaskFormView::consumeTask(int& nextId) {
 
     std::shared_ptr<Task> task;
     switch (_selectedType) {
-        case 0: task = std::make_shared<ComputationTask>(id, name, deps); break;
-        case 1: task = std::make_shared<IOTask>(id, name, deps); break;
-        case 2: task = std::make_shared<FileCheckTask>(id, name, deps); break;
-        case 3: task = std::make_shared<RenderTask>(id, name, deps); break;
+        case 0: task = std::make_shared<ComputationTask>(id, name, deps);break;
+        case 1: task = std::make_shared<IOTask>(id, name, deps);break;
+        case 2: task = std::make_shared<FileCheckTask>(id, name, deps);break;
+        case 3: task = std::make_shared<RenderTask>(id, name, deps);break;
         default: task = std::make_shared<ComputationTask>(id, name, deps);
     }
     task->setPriority(priority);

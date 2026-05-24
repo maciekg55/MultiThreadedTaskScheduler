@@ -1,17 +1,23 @@
 #include "Engine.h"
 #include <iostream>
-#include <ComputationTask.h>
-#include <RenderTask.h>
-#include <IOTask.h>
-#include <FileCheckTask.h>
+#include <tasks/ComputationTask.h>
+#include <tasks/RenderTask.h>
+#include <tasks/IOTask.h>
+#include <tasks/FileCheckTask.h>
 
 Engine::Engine(bool runTest)
     :
     _window(sf::VideoMode({1280, 800}), "window",sf::Style::Default),
     _renderer(_window, _scheduler)
 {
-    _scheduler.reset();
-    if (runTest) test();
+
+    auto presets = PresetLoader::listPresets("presets");
+    _renderer.setPresets(presets);
+
+    if (!presets.empty())
+        loadPreset("presets/" + presets[0] + ".preset");
+
+
 
 }
 
@@ -67,6 +73,7 @@ void Engine::handleEvents() {
                 _paused  = false;
                 _allDone = false;
                 _scheduler.reset();
+                _renderer.loadNextTaskId(-1);
                 _renderer.resetStartTime();
             }
 
@@ -102,6 +109,16 @@ void Engine::update() {
         _allDone = false;
     }
 
+    if (_renderer.hasPresetSelection() && !_started) {
+        std::string name = _renderer.consumePresetSelection();
+        if (name == "none") {
+            _scheduler.reset();
+            _renderer.loadNextTaskId(-1);
+        } else {
+            loadPreset("presets/" + name + ".preset");
+        }
+    }
+
     // add/edit/delete tasks
     if (_renderer.hasPendingAdd()) {
         auto task = _renderer.consumeTask();
@@ -126,6 +143,7 @@ void Engine::validateDeps(std::shared_ptr<Task>& task) {
     const auto& existing = _scheduler.getTasks();
     std::vector<int> validDeps;
     for (int depId : task->getDependencies()) {
+        if (depId == task->getId()) continue;  // skip self
         if (existing.count(depId))
             validDeps.push_back(depId);
     }
@@ -143,35 +161,99 @@ void Engine::render() {
 
 
 void Engine::test() {
-    // --- Chain A: High priority pipeline ---
-    // T1 → T2 → T5 (SaveResults depends on both chains)
-    _scheduler.addTask(std::make_shared<ComputationTask>(1, "DataLoad", std::vector<int>{}));
-    _scheduler.addTask(std::make_shared<ComputationTask>(2, "DataProcess", std::vector<int>{1}));
+    // === HIGH PRIORITY (5 tasks) ===
+    // these should jump the queue and run first
+    auto t1 = std::make_shared<ComputationTask>(1, "CriticalCalc", std::vector<int>{});
+    t1->setPriority(3);
+    _scheduler.addTask(t1);
 
-    // --- Chain B: Normal priority pipeline ---
-    // T3 → T4 → T5
-    _scheduler.addTask(std::make_shared<FileCheckTask>(3, "FileCheck", std::vector<int>{}));
-    _scheduler.addTask(std::make_shared<IOTask>(4, "Validate", std::vector<int>{3}));
+    auto t2 = std::make_shared<IOTask>(2, "UrgentFetch", std::vector<int>{});
+    t2->setPriority(3);
+    _scheduler.addTask(t2);
 
-    // --- Convergence point: depends on both chains ---
-    // T5 waits for T2 and T4 — tests multi-dependency
-    _scheduler.addTask(std::make_shared<RenderTask>(5, "SaveResults", std::vector<int>{2, 4}));
+    auto t3 = std::make_shared<FileCheckTask>(3, "SecurityScan", std::vector<int>{});
+    t3->setPriority(3);
+    _scheduler.addTask(t3);
 
-    // --- High priority independent task ---
-    // T6 has no deps and high priority — should run first
-    auto t6 = std::make_shared<ComputationTask>(6, "DataBackup", std::vector<int>{});
-    t6->setPriority(3);
+    auto t4 = std::make_shared<RenderTask>(4, "PriorityRender", std::vector<int>{3});
+    t4->setPriority(3);
+    _scheduler.addTask(t4);
+
+    auto t5 = std::make_shared<ComputationTask>(5, "CriticalProc", std::vector<int>{1});
+    t5->setPriority(3);
+    _scheduler.addTask(t5);
+
+    // === MEDIUM PRIORITY (10 tasks) ===
+    // mix of independent and chained
+    auto t6 = std::make_shared<ComputationTask>(6, "DataProcess1", std::vector<int>{});
     _scheduler.addTask(t6);
 
-    // --- Low priority cleanup — runs last ---
-    // T7 depends on T5 and is low priority
-    auto t7 = std::make_shared<FileCheckTask>(7, "Cleanup", std::vector<int>{5});
-    t7->setPriority(1);
+    auto t7 = std::make_shared<IOTask>(7, "DataFetch1", std::vector<int>{});
     _scheduler.addTask(t7);
 
-    // --- Another high priority with no deps ---
-    // T8 competes with T6 for first execution slot
-    auto t8 = std::make_shared<IOTask>(8, "ReportGen", std::vector<int>{});
-    t8->setPriority(3);
+    auto t8 = std::make_shared<ComputationTask>(8, "DataProcess2", std::vector<int>{7});
     _scheduler.addTask(t8);
+
+    auto t9 = std::make_shared<FileCheckTask>(9, "FileCheck1", std::vector<int>{});
+    _scheduler.addTask(t9);
+
+    auto t10 = std::make_shared<IOTask>(10, "DataFetch2", std::vector<int>{9});
+    _scheduler.addTask(t10);
+
+    auto t11 = std::make_shared<RenderTask>(11, "Render1", std::vector<int>{8, 10});
+    _scheduler.addTask(t11);
+
+    auto t12 = std::make_shared<ComputationTask>(12, "DataProcess3", std::vector<int>{});
+    _scheduler.addTask(t12);
+
+    auto t13 = std::make_shared<IOTask>(13, "DataFetch3", std::vector<int>{12});
+    _scheduler.addTask(t13);
+
+    auto t14 = std::make_shared<FileCheckTask>(14, "FileCheck2", std::vector<int>{});
+    _scheduler.addTask(t14);
+
+    auto t15 = std::make_shared<RenderTask>(15, "Render2", std::vector<int>{13, 14});
+    _scheduler.addTask(t15);
+
+    // === LOW PRIORITY (5 tasks) ===
+    // cleanup and logging — should run last
+    auto t16 = std::make_shared<FileCheckTask>(16, "Cleanup1", std::vector<int>{11});
+    t16->setPriority(1);
+    _scheduler.addTask(t16);
+
+    auto t17 = std::make_shared<FileCheckTask>(17, "Cleanup2", std::vector<int>{15});
+    t17->setPriority(1);
+    _scheduler.addTask(t17);
+
+    auto t18 = std::make_shared<ComputationTask>(18, "LogProcess", std::vector<int>{});
+    t18->setPriority(1);
+    _scheduler.addTask(t18);
+
+    auto t19 = std::make_shared<IOTask>(19, "LogWrite", std::vector<int>{18});
+    t19->setPriority(1);
+    _scheduler.addTask(t19);
+
+    auto t20 = std::make_shared<FileCheckTask>(20, "FinalCheck", std::vector<int>{16, 17, 19});
+    t20->setPriority(1);
+    _scheduler.addTask(t20);
+
+    int maxId = 0;
+    for (const auto& [id, task] : _scheduler.getTasks()) {
+        maxId = std::max(maxId, id);
+    }
+    _renderer.loadNextTaskId(maxId);
+}
+
+void Engine::loadPreset(const std::string& filepath) {
+    _scheduler.reset();
+    auto presets = PresetLoader::load(filepath);
+
+    int maxId = 0;
+    for (const auto& preset : presets) {
+        auto task = PresetLoader::createTask(preset);
+        validateDeps(task);
+        _scheduler.addTask(task);
+        maxId = std::max(maxId, preset.id);
+    }
+    _renderer.loadNextTaskId(maxId);
 }

@@ -1,16 +1,18 @@
 #include "Renderer.h"
-#include <iostream>
 
 Renderer::Renderer(sf::RenderWindow& window, Scheduler& scheduler)
-    : _window(window)
-    , _scheduler(scheduler)
-    , _threadView(window, _font, scheduler)
-    , _ganttView(window, _font, scheduler)
-    , _dependencyView(window, _font, scheduler)
-    , _taskQueueView(window, _font, scheduler)
-    , _taskDetailsView(window, _font, scheduler)
-    , _statsBar(window, _font, scheduler)
-    , _formView(window, _font)
+    :
+    _window(window),
+    _scheduler(scheduler),
+    _threadView(window, _font, scheduler),
+    _ganttView(window, _font, scheduler),
+    _dependencyView(window, _font, scheduler),
+    _taskQueueView(window, _font, scheduler),
+    _taskDetailsView(window, _font, scheduler),
+    _statsBar(window, _font, scheduler),
+    _formView(window, _font),
+    _presetSelector(window, _font)
+
 {
     _font.openFromFile("assets/JetBrainsMono-Regular.ttf");
 }
@@ -22,7 +24,8 @@ void Renderer::draw() {
     _taskQueueView.draw();
     _taskDetailsView.draw();
     _statsBar.draw();
-    _formView.draw();  // drawn last — sits on top of everything
+    _presetSelector.draw();
+    _formView.draw();
 }
 
 void Renderer::resetStartTime() {
@@ -38,43 +41,57 @@ void Renderer::handleTextInput(uint32_t unicode) {
     _formView.handleTextInput(unicode);
 }
 
-void Renderer::handleClick(sf::Vector2f mouse) {
-    // form is open — send all clicks there
+void Renderer::handleClick(sf::Vector2f mousePos) {
+
+    _presetSelector.handleClick(mousePos);
+
     if (_formView.isVisible()) {
-        _formView.handleClick(mouse);
+        _formView.handleClick(mousePos);
         return;
     }
 
-    // task row selection
+
+
+    // helper to select/deselect a task in both detail and graph views
+    auto selectTask = [&](int id) {
+        int current = _taskDetailsView.getSelectedTask();
+        int newId = (current == id) ? -1 : id;
+        _taskDetailsView.setSelectedTask(newId);
+        _dependencyView.setSelectedTask(newId);
+    };
+
+    // task row selection in queue panel
     for (const auto& [id, rect] : _taskQueueView.getTaskRowRects()) {
-        if (rect.contains(mouse)) {
-            int current = _taskDetailsView.getSelectedTask();
-            _taskDetailsView.setSelectedTask(current == id ? -1 : id);
-            return;
-        }
+        if (rect.contains(mousePos)) { selectTask(id); return; }
+    }
+
+    // node click in dependency graph
+    for (const auto& [id, rect] : _dependencyView.getNodeRects()) {
+        if (rect.contains(mousePos)) { selectTask(id); return; }
     }
 
     // delete button
     if (_taskDetailsView.getDeleteBtn() != sf::FloatRect{} &&
-        _taskDetailsView.getDeleteBtn().contains(mouse)) {
+        _taskDetailsView.getDeleteBtn().contains(mousePos)) {
         _deleteTaskId = _taskDetailsView.getSelectedTask();
         _pendingDelete = true;
         _taskDetailsView.setSelectedTask(-1);
+        _dependencyView.setSelectedTask(-1);
         return;
-    }
+        }
 
     // edit button
     if (_taskDetailsView.getEditBtn() != sf::FloatRect{} &&
-        _taskDetailsView.getEditBtn().contains(mouse)) {
+        _taskDetailsView.getEditBtn().contains(mousePos)) {
         int selectedId = _taskDetailsView.getSelectedTask();
         auto it = _scheduler.getTasks().find(selectedId);
         if (it != _scheduler.getTasks().end())
             _formView.openForEdit(it->second);
         return;
-    }
+        }
 
     // add task button
-    if (_statsBar.getAddBtn().contains(mouse)) {
+    if (_statsBar.getAddBtn().contains(mousePos)) {
         _formView.openForAdd();
         return;
     }

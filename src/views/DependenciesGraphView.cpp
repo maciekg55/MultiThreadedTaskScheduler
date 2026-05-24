@@ -117,15 +117,20 @@ void DependenciesGraphView::draw() {
         }
     }
 
+
     // nodes
+    _nodeRects.clear();
     for (const auto& [id, task] :tasks) {
         if (!nodePos.count(id)) continue;
         sf::Vector2f pos = nodePos[id];
+        _nodeRects[id] = sf::FloatRect(pos, {nodeW, nodeH});
 
         sf::RectangleShape node({nodeW, nodeH});
-        node.setFillColor(sf::Color(35, 35, 55));
-        node.setOutlineThickness(1.5f);
-        node.setOutlineColor(UI::statusColor(task->getStatus()));
+        node.setFillColor(UI::priorityBgColor(task->getPriority()));
+        node.setOutlineThickness(id == _selectedTaskId ? 2.5f : 1.5f);
+        node.setOutlineColor(id == _selectedTaskId
+            ? sf::Color::White
+            : UI::statusColor(task->getStatus()));
         node.setPosition(pos);
         _window.draw(node);
 
